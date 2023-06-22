@@ -1,0 +1,46 @@
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load(
+    "@rules_xcodeproj//xcodeproj:defs.bzl",
+    "xcodeproj",
+)
+
+string_flag(
+    name = "word",
+    values = ["1", "2"],
+    build_setting_default = "1",
+)
+
+config_setting(
+  name = "word1",
+  flag_values = {
+    "word": "1"
+  }
+)
+
+config_setting(
+  name = "word2",
+  flag_values = {
+    "word": "2"
+  }
+)
+
+cc_binary(
+  name = "example",
+  srcs = [
+    "main.cc",
+    "word.h"
+  ] + select({
+    "word1": ["word1.cc"],
+    "word2": ["word2.cc"]
+  }),
+  visibility = ["//visibility:public"],
+)
+
+xcodeproj(
+    name = "xcodeproj",
+    project_name = "ExampleProj",
+    tags = ["manual"],
+    top_level_targets = [
+        "example"
+    ],
+)
